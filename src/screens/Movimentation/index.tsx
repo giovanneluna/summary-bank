@@ -3,49 +3,41 @@ import {Container, Content, ListContent} from './styles'
 import { Highlight } from '@components/Highlight'
 import { Button } from '@components/Button'
 import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react'
+import React from 'react'
 import { FlatList, Text, View } from 'react-native'
+import { Title } from '@components/Highlight/style'
+import { Movement, useMovements } from '../../contexts/MovementsContext' 
 
 export function Movimentation() {
-  const [movimentation,setMovimentation] = useState('')
   const navigation = useNavigation()
   async function handleNewMovimentation(){
     navigation.navigate('registerMov');
   }
+  const { movements } = useMovements();
+  const { totalBalance } = useMovements();
 
-  type DataItem = {
-    key: string;
-    value: string;
+  const renderItem = ({ item }: { item: Movement }) => {
+    return (
+      <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
+        <Text>Nome: {item.name}</Text>
+        <Text>Valor: R${item.balance}</Text>
+        <Text></Text>
+      </View>
+    );
   };
-  
-  const data: DataItem[] = [
-    { key: '1', value: 'Item 1' },
-    { key: '2', value: 'Item 2' },
-    { key: '3', value: 'Item 3' },
-    { key: '4', value: 'Item 4' },
-    { key: '5', value: 'Item 5' },
-  ];
-  
-  type RenderItemType = {
-    item: DataItem;
-  };
-
-  const renderItem: React.FC<RenderItemType> = ({ item }) => (
-    <View style={{ padding: 10 }}>
-      <Text>{item.value}</Text>
-    </View>
-  );
+  const reversedMovements = movements.slice().reverse();
 
   return (
     <Container>
       <Header showBackButton />
-      
-      <Content>
+        <Title>
+          {totalBalance}
+        </Title>
         <Highlight 
         title='Movimentações'
         subtitle='Todas as Movimentações'
         />
-
+      <Content>
         <Button 
         style={{marginTop:1}}
         title='Criar'
@@ -54,13 +46,15 @@ export function Movimentation() {
       </Content>
 
       <ListContent>
-      <FlatList
-      data={data}
-      renderItem={renderItem}
-      
-    />
+     
       </ListContent>
-      
+      <FlatList
+       showsVerticalScrollIndicator={false}
+      data={reversedMovements} // Passa o array movements como fonte de dados
+      renderItem={renderItem} // Renderiza cada item da lista usando a função renderItem
+      keyExtractor={(item, index) => index.toString()} // Define uma chave única para cada item
+    />
     </Container>
   )
+
 }
