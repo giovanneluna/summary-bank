@@ -3,9 +3,7 @@ export declare global {
     interface RootParamList {
       home: undefined
       movimentation: undefined
-      newMovimentation: {
-        movimentation: string
-      }
+      registerMov: undefined
     }
   }
 }
