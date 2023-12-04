@@ -10,12 +10,9 @@ export const Container = styled(SafeAreaView)`
 `
 export const Content = styled.View`
   flex: 1;
-  justify-content: center;
 `
-//@ts-ignore
-export const Icon = styled(UsersThree).attrs(({ theme }) => ({
-  size: 56,
-  color: theme.COLORS.GREEN_700,
-}))`
-  align-self: center;
+export const ListContent = styled.View`
+  padding-bottom: 200px;
+  flex: 1;
+  width: 100%;
 `

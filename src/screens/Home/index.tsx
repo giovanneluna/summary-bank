@@ -13,6 +13,7 @@ import { Button } from '@components/Button';
 
 import { Container } from './styles';
 import { Loading } from '@components/Loading';
+import { ButtonRounded } from '../../components/ButtonRounded/index';
 
 export function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,10 +33,9 @@ export function Home() {
         subtitle="Movimentação Mensal"
       />
 
-      <Button 
-        title='Cadastrar Movimentação'
-        onPress={handleMovimentation}
-      />
+      <ButtonRounded/>
+
+
     </Container>
   );
 }

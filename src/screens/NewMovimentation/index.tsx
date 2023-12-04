@@ -12,11 +12,11 @@ import { ListEmpty } from '@components/ListEmpty';
 import { Button } from '@components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { AppError } from '@utils/AppError';
-import { playersAddByGroup } from '@storage/player/playerAddByGroup';
 import { playersGetByGroupAndTeam } from '@storage/player/playersGetByGroupAndTeam';
 import { PlayerStorageDTO } from '@storage/player/PlayerStorageDTO';
 import { playerRemoveByGroup } from '@storage/player/playerRemoveByGroup';
 import { groupRemoveByName } from '@storage/group/groupRemoveByName';
+import { movAdd } from '@storage/player/movAdd';
 
 type RouteParams = {
   group:string;
@@ -26,7 +26,11 @@ type RouteParams = {
 const MemoizedFilter = React.memo(Filter);
 
 export function NewMovimentation(){
-  const [newPlayerName,setNewPlayerName] = useState('')
+  const [newMovName,setNewMovName] = useState('')
+  const [newMovBalance,setNewMov] = useState('')
+  const [newMovDescription,setNewMovDescription] = useState('')
+  const [newMovPaymentMethod,setNewMovPaymentMethod] = useState('')
+  const [newMovType,setNewMovType] = useState('')
   const [team,setTeam] = useState('Time A')
   const [players,setPlayers] = useState<PlayerStorageDTO[]>([])
   
@@ -35,24 +39,28 @@ export function NewMovimentation(){
   
   const {group} = route.params as RouteParams
 
-  const newPlayerNameInputRef = useRef<TextInput>(null)
+  const newMovNameInputRef = useRef<TextInput>(null)
 
   async function handleAddPlayer(){
-    if(newPlayerName.trim().length === 0){
+    if(newMovName.trim().length === 0){
       return Alert.alert('Nova Pessoa','Informe o nome da pessoa para Adicionar')
     }
 
-    const newPlayer = {
-      name:newPlayerName,
+    const newMov = {
+      name:newMovName,
       team,
+      // balance: number,
+      // description: string,
+      // paymentMethod: boolean,
+      // movementType: boolean,
     }
 
     try {
-      await playersAddByGroup(newPlayer,group)
-      newPlayerNameInputRef.current?.blur()
+      await movAdd(newMov,group)
+      newMovNameInputRef.current?.blur()
 
-      setNewPlayerName('')
-      fetchPlayersByTeam();
+      setNewMovName('')
+      fetchMovByRegister();
 
     }catch(error) {
       if(error instanceof AppError){
@@ -66,7 +74,7 @@ export function NewMovimentation(){
     }
   }
 
-  async function fetchPlayersByTeam(){
+  async function fetchMovByRegister(){
     try{
       const playersByTeam = await playersGetByGroupAndTeam(group,team)
       setPlayers(playersByTeam)
@@ -76,10 +84,10 @@ export function NewMovimentation(){
       }
   }
 
-  async function handlePlayerRemove(playerName: string){
+  async function handleMovRemove(playerName: string){
     try {
       await playerRemoveByGroup(playerName,group)
-      fetchPlayersByTeam();
+      fetchMovByRegister();
     } catch (error) {
       Alert.alert('Remover Pessoa','Não foi possivel remover essa pessoa')
     }
@@ -90,7 +98,7 @@ export function NewMovimentation(){
   await groupRemoveByName(group)
   navigation.navigate('movimentation')
   } catch (error) {
-    Alert.alert('Remover Grupo','Não foi possivel remover o grupo')
+    Alert.alert('Deletar Movimentação','Não foi possivel remover a Movimentação')
 }
   }
 
@@ -105,7 +113,7 @@ export function NewMovimentation(){
   }
 
   useEffect(()=>{
-    fetchPlayersByTeam()
+    fetchMovByRegister()
   },[team])
 
   return(
@@ -119,11 +127,11 @@ export function NewMovimentation(){
 
     <Form>
       <Input 
-      inputRef={newPlayerNameInputRef}
+      inputRef={newMovNameInputRef}
       placeholder="Nome da Pessoa"
-      value={newPlayerName}
+      value={newMovName}
       autoCorrect={false}
-      onChangeText={setNewPlayerName}
+      onChangeText={setNewMovName}
       onSubmitEditing={handleAddPlayer}
       returnKeyType='done'
       />
@@ -158,7 +166,7 @@ export function NewMovimentation(){
         keyExtractor={item => item.name}
         renderItem={({item})=> (
           <PlayerCard 
-          onRemove={()=>{handlePlayerRemove(item.name)}}
+          onRemove={()=>{handleMovRemove(item.name)}}
           name={item.name} 
           />
         )}
